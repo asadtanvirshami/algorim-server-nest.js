@@ -16,6 +16,30 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
+  googleLogin(req) {
+    if (!req.user) {
+      return 'No user from Google';
+    }
+
+    return {
+      message: 'User info from Google',
+      user: req.user,
+      token: this.jwtService.sign(req.user),
+    };
+  }
+
+  githubLogin(req) {
+    if (!req.user) {
+      return 'No user from GitHub';
+    }
+
+    return {
+      message: 'User info from GitHub',
+      user: req.user,
+      token: this.jwtService.sign(req.user),
+    };
+  }
+
   async signup(
     lname: string,
     fname: string,
@@ -38,7 +62,7 @@ export class AuthService {
       password: hashedPassword,
     });
     console.log(user);
-    
+
     await user.save();
 
     return this.generateToken(user);
@@ -47,7 +71,7 @@ export class AuthService {
   async signin(email: string, password: string): Promise<any> {
     const user = await this.userModel.findOne({ email });
     console.log(user);
-    
+
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
